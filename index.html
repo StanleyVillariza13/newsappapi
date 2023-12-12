@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News App</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .news-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        label {
+            margin-right: 10px;
+            color: #555;
+            cursor: pointer;
+        }
+
+        select, button {
+            padding: 8px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #newsResult {
+            margin-top: 20px;
+            max-width: 800px;
+            overflow-y: auto; 
+        }
+
+        .article {
+            background-color: #fff;
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .translate-button, #backButton {
+            display: none;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>News App</h1>
+    
+    <div class="news-section">
+        <label for="categoryInput">Select Category:</label>
+        <select id="categoryInput">
+            <option value="technology">Technology</option>
+            <option value="sports">Sports</option>
+            <option value="business">Business</option>
+        </select>
+        
+        <button onclick="getNews()">Get News</button>
+        <button id="backButton" onclick="goBack()">Back</button>
+    </div>
+
+    <div id="newsResult"></div>
+    <button class="translate-button" onclick="translateNews()">Translate to English</button>
+
+    <script>
+        function getNews() {
+            const apiKey = '3f3369ed10934752b28e317d14843f21';
+            const category = document.getElementById('categoryInput').value;
+            const apiUrl = `https://newsapi.org/v2/top-headlines?category=${category}&apiKey=${apiKey}`;
+
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const newsResult = document.getElementById('newsResult');
+                    const backButton = document.getElementById('backButton');
+                    const translateButton = document.querySelector('.translate-button');
+
+            
+                    document.querySelector('.news-section').style.display = 'none';
+                    backButton.style.display = 'block';
+                    translateButton.style.display = 'block';
+
+                    newsResult.innerHTML = '';
+
+                    data.articles.forEach(article => {
+                        const articleElement = document.createElement('div');
+                        articleElement.classList.add('article');
+
+                        const titleElement = document.createElement('h2');
+                        titleElement.textContent = article.title;
+
+                        const descriptionElement = document.createElement('p');
+                        descriptionElement.textContent = article.description;
+
+                        const linkElement = document.createElement('a');
+                        linkElement.href = article.url;
+                        linkElement.target = '_blank';
+                        linkElement.textContent = 'Read more';
+
+                        articleElement.appendChild(titleElement);
+                        articleElement.appendChild(descriptionElement);
+                        articleElement.appendChild(linkElement);
+
+                        newsResult.appendChild(articleElement);
+                    });
+
+                    
+                    newsResult.scrollTop = 0;
+                })
+                .catch(error => {
+                    console.error('Error fetching news data:', error);
+                });
+        }
+
+        function goBack() {
+           
+            document.querySelector('.news-section').style.display = 'flex';
+            document.getElementById('backButton').style.display = 'none';
+            document.querySelector('.translate-button').style.display = 'none';
+
+            document.getElementById('newsResult').innerHTML = '';
+        }
+
+        function translateNews() {
+            const newsResult = document.getElementById('newsResult');
+            const articles = newsResult.querySelectorAll('.article');
+
+            for (const article of articles) {
+                const titleElement = article.querySelector('h2');
+                const descriptionElement = article.querySelector('p');
+
+             
+                titleElement.textContent += ' (Translated)';
+                descriptionElement.textContent += ' (Translated)';
+            }
+        }
+    </script>
+
+    
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+   
+    <div id="google_translate_element"></div>
+
+    <script>
+       
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en', 
+                autoDisplay: false,  
+            }, 'google_translate_element');
+        }
+    </script>
+
+</body>
+</html>
